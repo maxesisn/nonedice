@@ -15,10 +15,9 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 ## 功能列表
 >* ✅表示已实现 ❎表示未实现
 
-* ❎Dismiss命令
 * ❎Help命令
-* ❎基础掷骰
-* ❎复杂掷骰表达式
+* ✅基础掷骰
+* ✅复杂掷骰表达式
 * ❎COC判定掷骰
 * ❎COC人物卡
 * ❎COC多人物卡
