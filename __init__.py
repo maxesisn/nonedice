@@ -3,11 +3,12 @@ import os
 import re
 import json
 
-from hoshino import Service
+from hoshino import Service, priv
 from aiocqhttp.exceptions import ActionFailed
 
 from .dice import do_basic_dice
 from . import ob
+from .COC import coc_profile_recorder
 
 sv = Service('nonedice', help_='''
 [.r] 掷骰子
@@ -73,7 +74,7 @@ async def basic_dice(bot, ev):
             msg += f"第{i+1}次"+per_msg+"\n"
         if msg != "null dice":
             if HIDDEN_STATE:
-                await ob.ob_broadcast(bot,ev,msg)
+                await ob.ob_broadcast(bot, ev, msg)
                 await bot.send_private_msg(self_id=ev.self_id, user_id=ev.user_id, message="本次暗骰" + msg + f"总计点数：{res}")
             else:
                 await bot.send(ev, msg + f"总计点数：{res}", at_sender=True)
@@ -83,7 +84,7 @@ async def basic_dice(bot, ev):
         res, msg = await do_basic_dice(num, min_, max_, opr, offset, misc)
         if msg != "null dice":
             if HIDDEN_STATE:
-                await ob.ob_broadcast(bot,ev, msg)
+                await ob.ob_broadcast(bot, ev, msg)
                 await bot.send_private_msg(self_id=ev.self_id, user_id=ev.user_id, message="本次暗骰" + msg)
             else:
                 await bot.send(ev, msg, at_sender=True)
@@ -93,16 +94,16 @@ async def basic_dice(bot, ev):
 
 @sv.on_prefix('.set')
 async def set_default_dice(bot, ev):
-    group_id=str(ev.group_id)
-    args=str(ev.message).lower()
+    group_id = str(ev.group_id)
+    args = str(ev.message).lower()
     if args == ("coc" or 100):
         args = 100
     elif args == ("dnd" or 20):
         args = 20
     else:
-        await bot.finish(ev,"面数必须为正整数！")
+        await bot.finish(ev, "面数必须为正整数！")
     if group_id not in dice_config:
-        dice_config[group_id]={}
+        dice_config[group_id] = {}
     dice_config[group_id]['default_dice'] = args
     try:
         with open(os.path.join(fd, "config/dice.json"), "w") as f:
@@ -121,15 +122,22 @@ async def dice_ob(bot, ev):
     elif command == 'list':
         msg = await ob.get_ob_list(group_id)
     elif command == 'clr':
-        msg = await ob.quit_ob_list(group_id, player_id, ALL=True)
+        if not priv.check_priv(ev, priv.ADMIN):
+            msg = "只有管理员可以清空旁观者列表"
+        else:
+            msg = await ob.quit_ob_list(group_id, player_id, ALL=True)
     elif command == 'join':
         msg = await ob.join_ob_list(group_id, player_id)
-    elif command !="":
+    elif command != "":
         msg = "？你这是什么指令"
     else:
         msg = await ob.join_ob_list(group_id, player_id)
     try:
         await bot.send(ev, msg)
     except ActionFailed as e:
-        await bot.send(ev,"⚠发送暗骰结果失败，请所有旁观者先向骰娘私发消息建立临时会话")
-        pass
+        await bot.send(ev, "⚠发送暗骰结果失败，请所有旁观者先向骰娘私发消息建立临时会话")
+
+
+@sv.on_prefix('.coc')
+async def gen_coc_profile(bot, ev):
+    await bot.finish(ev, "在做了在做了")

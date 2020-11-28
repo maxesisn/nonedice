@@ -79,10 +79,13 @@ async def ob_broadcast(bot, ev, msg):
         ob_list = ob_config[str(ev.group_id)]
         dicer_info = await bot.get_group_member_info(self_id=ev.self_id, group_id=ev.group_id, user_id=ev.user_id)
         try:
-            nickname = dicer_info.get('card', 'nickname')
+            nickname=dicer_info['card'] or dicer_info['nickname'] or str(dicer_info['user_id'])
         except:
-            nickname = ev.user_id
+            await bot.send(ev, "⚠无法获取旁观者信息")
+            return
         for qq in ob_list:
+            if int(qq) == int(ev.user_id):#怎么会有人开着旁观模式跑团啊？真没劲
+                continue
             await bot.send_private_msg(self_id=ev.self_id, user_id=qq, message=f"群{ev.group_id}刚刚进行了一次暗骰，结果为：\n"+nickname+msg)
             await asyncio.sleep(1)
     except ActionFailed as e:
