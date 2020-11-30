@@ -34,21 +34,18 @@ except:
 
 @sv.on_prefix('.r')
 # 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
-async def basic_dice(bot, ev):
+async def basic_dice(bot, ev, HIDDEN_STATE=False):
     m = str(ev.message)
-    # 是否为暗骰模式
-
-    HIDDEN_STATE = True if ev.raw_message.startswith(".rh") else False
-
-    misc = None
+    misc = ""
     times, num, min_, opr, offset = 1, 1, 1, '+', 0
+
     try:
         max_ = dice_config[str(ev.group_id)]['default_dice']
     except:
         max_ = 100
+
     match = re.match(
-        r'^(h)?\s*(((?P<times>\d{1,4})#)?(?P<num>\d{0,2})d((?P<min>\d{1,4})~)?(?P<max>\d{0,4})((?P<opr>[*x/+-])(?P<offset>\d{0,5}))?)?(?P<misc>.*)?\b', m, re.I)
-    print(match)
+        r'^\s*(((?P<times>\d{1,4})#)?(?P<num>\d{0,2})d((?P<min>\d{1,4})~)?(?P<max>\d{0,4})((?P<opr>[*x/+-])(?P<offset>\d{0,5}))?)?(?P<misc>.*)?\b', m, re.I)
     if match is not None:  # 判断是否含有掷骰式
         if s := match.group('times'):  # 次数
             times = int(s)
@@ -90,6 +87,12 @@ async def basic_dice(bot, ev):
                 await bot.send(ev, msg, at_sender=True)
         else:
             await bot.finish(ev, "咦？我骰子呢？")
+
+
+# 对啊 我把暗骰判断交给触发器处理不就完事了吗
+@sv.on_prefix('.rh')
+async def hidden_dice(bot, ev):
+    await basic_dice(bot, ev, HIDDEN_STATE=True)
 
 
 @sv.on_prefix('.set')
