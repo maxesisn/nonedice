@@ -135,10 +135,7 @@ async def dice_ob(bot, ev):
         msg = "？你这是什么指令"
     else:
         msg = await ob.join_ob_list(group_id, player_id)
-    try:
-        await bot.send(ev, msg)
-    except ActionFailed as e:
-        await bot.send(ev, "⚠发送暗骰结果失败，请所有旁观者先向骰娘私发消息建立临时会话")
+    await bot.send(ev, msg)
 
 
 @sv.on_prefix('.coc')
