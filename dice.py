@@ -18,7 +18,7 @@ async def do_basic_dice(num, min_, max_, opr, offset, misc=""):
         rolls_str = str(sum_)
     res = int(ops[opr](sum_, offset))
     TIP = "的掷骰结果是："
-    if misc !=None and len(misc) != 0:
+    if misc != None and len(misc) != 0:
         TIP = f"对{misc}" + TIP
     msg = [
         f'{TIP}\n',
@@ -36,3 +36,8 @@ async def do_basic_dice(num, min_, max_, opr, offset, misc=""):
     ]
     msg = ''.join(msg)
     return res, msg
+
+
+async def simple_dice(max_=100):
+    result,_ = await do_basic_dice(1, 1, max_, '+', 0)
+    return result 

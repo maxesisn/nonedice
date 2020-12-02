@@ -8,7 +8,7 @@ from aiocqhttp.exceptions import ActionFailed
 
 from .dice import do_basic_dice
 from . import ob
-from .COC import coc_profile_recorder
+from .COC import coc_profile_generator
 
 sv = Service('nonedice', help_='''
 [.r] 掷骰子
@@ -138,6 +138,25 @@ async def dice_ob(bot, ev):
     await bot.send(ev, msg)
 
 
+@sv.on_prefix('nn')
+async def set_nickname(bot, ev):
+    pass
+
+
+@sv.on_prefix('.coc7')
 @sv.on_prefix('.coc')
-async def gen_coc_profile(bot, ev):
-    await bot.finish(ev, "在做了在做了")
+async def coc_profile(bot, ev):
+    command = str(ev.message).lower()
+    detail_mode = True if "d" in command else False
+    command = command[command.find("d"):]
+    print(command)
+    if command.isdigit() is False:
+        command = 1
+    msg = await coc_profile_generator.gen_coc_profile(int(command), detail_mode)
+    await bot.send(ev, msg, at_sender=True)
+
+
+@sv.on_prefix('.coc6')
+async def coc_profile_v6(bot, ev):
+    # 摸了
+    await bot.send(ev, "0202年就别跑COC6力！")
