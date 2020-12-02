@@ -19,6 +19,7 @@ async def save_config(data):
     except Exception as e:
         print(traceback.format_exc())
 
+#读写数据有更优雅的写法，但是先摸一段时间再说
 
 async def get_ob_list(group_id):
     try:

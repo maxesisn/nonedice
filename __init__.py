@@ -9,6 +9,7 @@ from aiocqhttp.exceptions import ActionFailed
 from .dice import do_basic_dice
 from . import ob
 from .COC import coc_profile_generator
+from . import player
 
 sv = Service('nonedice', help_='''
 [.r] 掷骰子
@@ -138,9 +139,17 @@ async def dice_ob(bot, ev):
     await bot.send(ev, msg)
 
 
-@sv.on_prefix('nn')
+@sv.on_prefix('.nn')
 async def set_nickname(bot, ev):
-    pass
+    command = str(ev.message).lower()
+    if command=="show":
+        msg=await player.get_player_name(str(ev.group_id),str(ev.user_id))
+        if msg is None:
+            msg="您当前没有设置昵称！"
+    else:
+        msg = await player.set_player_name(str(ev.group_id),str(ev.user_id),str(ev.message))
+    await bot.send(ev, msg)
+
 
 
 @sv.on_prefix('.coc7')
