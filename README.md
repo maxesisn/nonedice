@@ -17,29 +17,29 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 - 请禁用```HoshinoBot```的```dice```插件以避免冲突
 
 ## 功能列表
->* ✅表示已实现 ❎表示未实现
+>* ✔表示已实现 ✘表示未实现/关键部分未实现
 
-* ❎Help命令
-* ✅基础掷骰
-* ✅复杂掷骰表达式
-* ❎COC判定掷骰
-* ❎COC人物卡
-* ❎COC多人物卡
-* ❎COC跨人物卡检定
-* ❎COC表达式人物卡录入
-* ❎COC成长检定
-* ✅COC人物卡生成
-* ❎COC检定房规设定
-* ❎COC理智检定
-* ❎COC疯狂列表
-* ❎Keep掷骰
-* ❎DND人物卡生成
-* ❎DND先攻
-* ❎Rules规则查询
-* ❎Jrrp今日人品
-* ❎Fudge骰
-* ❎Ww骰池
-* ❎Dx骰
-* ❎Name/nnn随机名称生成
-* ✅Set默认骰设定
-* ❎各模块开启以及关闭
+* ✘Help命令
+* ✔基础掷骰
+* ✔复杂掷骰表达式
+* ✘COC判定掷骰
+* ✘COC人物卡
+* ✘COC多人物卡
+* ✘COC跨人物卡检定
+* ✘COC表达式人物卡录入
+* ✘COC成长检定
+* ✔COC人物卡生成
+* ✘COC检定房规设定
+* ✘COC理智检定
+* ✘COC疯狂列表
+* ✘Keep掷骰
+* ✘DND人物卡生成
+* ✘DND先攻
+* ✘Rules规则查询
+* ✘Jrrp今日人品
+* ✘Fudge骰
+* ✘Ww骰池
+* ✘Dx骰
+* ✘Name/nnn随机名称生成
+* ✔Set默认骰设定
+* ✘各模块开启以及关闭
