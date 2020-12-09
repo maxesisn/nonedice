@@ -28,7 +28,7 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 * ❎COC跨人物卡检定
 * ❎COC表达式人物卡录入
 * ❎COC成长检定
-* ❎COC人物卡生成
+* ✅COC人物卡生成
 * ❎COC检定房规设定
 * ❎COC理智检定
 * ❎COC疯狂列表
@@ -41,5 +41,5 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 * ❎Ww骰池
 * ❎Dx骰
 * ❎Name/nnn随机名称生成
-* ❎Set默认骰设定
+* ✅Set默认骰设定
 * ❎各模块开启以及关闭
