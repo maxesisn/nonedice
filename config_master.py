@@ -7,9 +7,12 @@ from collections import defaultdict
 class Config(object):
     fd = os.path.dirname(__file__)
 
+    with open(os.path.join(fd, "config/personalization.json"), "r") as f:
+        personalization_config = json.load(f)
+    
     def __init__(self) -> None:
         super().__init__()
-
+        
     def get(self,config_name):
         return getattr(self, config_name, None)
 
@@ -36,7 +39,6 @@ class GeneralConfig(Config):
             self.player_config = json.load(f)
         with open(os.path.join(self.fd, "config/ob.json"), "r") as f:
             self.ob_config = json.load(f)
-        print("dice general config loaded")
 
     def saver(self):
         with open(os.path.join(self.fd, "config/dice.json"), "w") as f:
@@ -67,4 +69,3 @@ class COCConfig(Config):
                       indent=4, ensure_ascii=False)
         with open(os.path.join(self.fd, "config/COC/profile.json"), "w") as f:
             json.dump(self.coc_profile_config, f, indent=4, ensure_ascii=False)
-        print("dice COC config saved")
