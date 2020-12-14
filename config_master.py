@@ -45,7 +45,6 @@ class GeneralConfig(Config):
             json.dump(self.player_config, f, indent=4, ensure_ascii=False)
         with open(os.path.join(self.fd, "config/ob.json"), "w") as f:
             json.dump(self.ob_config, f, indent=4, ensure_ascii=False)
-        print("dice general config saved")
 
 
 class COCConfig(Config):
@@ -61,7 +60,6 @@ class COCConfig(Config):
             self.coc_template_config = json.load(f)
         with open(os.path.join(self.fd, "config/COC/profile.json"), "r") as f:
             self.coc_profile_config = json.load(f)
-        print("dice COC config loaded")
 
     def saver(self):
         with open(os.path.join(self.fd, "config/COC/template.json"), "w") as f:
