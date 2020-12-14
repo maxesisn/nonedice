@@ -13,7 +13,7 @@ except:
 async def save_config(data):
     try:
         with open(os.path.join(fd, "config/player.json"), "w") as f:
-            json.dump(data, f, indent=4)
+            json.dump(data, f, indent=4, ensure_ascii=False)
     except Exception as e:
         print(e)
 

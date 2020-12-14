@@ -23,10 +23,10 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 * ✔基础掷骰
 * ✔复杂掷骰表达式
 * ✘COC判定掷骰
-* ✘COC人物卡
+* ✔COC人物卡
 * ✘COC多人物卡
 * ✘COC跨人物卡检定
-* ✘COC表达式人物卡录入
+* ✔COC表达式人物卡录入
 * ✘COC成长检定
 * ✔COC人物卡生成
 * ✘COC检定房规设定

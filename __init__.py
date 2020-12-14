@@ -9,6 +9,7 @@ from aiocqhttp.exceptions import ActionFailed
 from .dice import do_basic_dice
 from . import ob
 from .COC import coc_profile_generator
+from .COC import coc_profile_recorder
 from . import player
 
 sv = Service('nonedice', help_='''
@@ -169,3 +170,25 @@ async def coc_profile(bot, ev):
 async def coc_profile_v6(bot, ev):
     # 摸了
     await bot.send(ev, "0202年就别跑COC6力！")
+
+@sv.on_prefix('.st')
+async def coc_record_profile(bot, ev):
+    command = str(ev.message).lower()
+    if command.startswith('clr'):
+        msg = await coc_profile_recorder.clear_profile(str(ev.group_id), str(ev.user_id))
+        await bot.finish(ev, msg)
+    if command.startswith('del'):
+        elements = command[3:].strip()
+        print(elements)
+        msg = await coc_profile_recorder.delete_profile_element(str(ev.group_id), str(ev.user_id), elements)
+        await bot.finish(ev, msg)
+    if command.startswith('show'):
+        if command == "show":
+            msg = await coc_profile_recorder.show_profile(str(ev.group_id), str(ev.user_id), ALL=True)
+        else:
+            element = command[3:]
+            msg = await coc_profile_recorder.show_profile(str(ev.group_id), str(ev.user_id), element=element)
+        await bot.finish(ev, msg)
+    else:
+        msg = await coc_profile_recorder.add_profile(str(ev.group_id), str(ev.user_id), command)
+        await bot.finish(ev, msg)
