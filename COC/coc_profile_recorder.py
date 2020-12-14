@@ -1,24 +1,8 @@
-import os
-import json
 import traceback
-from collections import defaultdict
+from ..config_master import COCConfig
 
-profile_config = defaultdict(lambda: defaultdict(dict))
-fd = os.path.dirname(__file__)
-try:
-    with open(os.path.join(fd, "config/profile.json"), "r") as f:
-        profile_config = json.load(f)
-except:
-    pass
-
-
-async def save_config(data):
-    try:
-        with open(os.path.join(fd, "config/profile.json"), "w") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-    except:
-        print(traceback.format_exc())
-
+config=COCConfig()
+profile_config=config.get("coc_profile_config")
 
 async def resolve_info(info):
     info_set = info.split(" ")
@@ -39,7 +23,7 @@ async def clear_profile(group_id, player_id):
         return "您尚未在本群建立档案！"
     try:
         profile_config[group_id][player_id] = None
-        await save_config(profile_config)
+        config.saver()
         return "已成功删除档案"
     except:
         return "删除玩家档案时发生未知错误"
@@ -52,7 +36,7 @@ async def delete_profile_element(group_id, player_id, elements):
             profile_config[group_id][player_id].pop(element,None)
         else:
             return f"删除至{element}时发生错误：属性不存在。命令未生效"
-    await save_config(profile_config)
+    config.saver()
     return f"已成功移除：{elements_list}"
 
 
@@ -88,7 +72,7 @@ async def add_profile(group_id, player_id, info):
         except:
             profile_config[group_id][player_id]={}
             profile_config[group_id][player_id].update(info)
-        await save_config(profile_config)
+        config.saver()
         return "已成功添加属性！"
     except:
         print(traceback.format_exc())

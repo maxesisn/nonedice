@@ -1,21 +1,8 @@
-import os
-import json
 import traceback
+from .config_master import GeneralConfig
 
-fd = os.path.dirname(__file__)
-try:
-    with open(os.path.join(fd, "config/player.json"), "r") as f:
-        player_config = json.load(f)
-except:
-    player_config = {}
-
-
-async def save_config(data):
-    try:
-        with open(os.path.join(fd, "config/player.json"), "w") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-    except Exception as e:
-        print(e)
+config = GeneralConfig()
+player_config = config.get("player_config")
 
 
 async def get_player_name(group_id, player_id):
@@ -37,11 +24,11 @@ async def set_player_name(group_id, player_id, nickname):
         if player_id not in player_config[group_id]:
             player_config[group_id][player_id] = {}
         if nickname == "":
-            player_config[group_id][player_id].pop("nickname",None)
-            await save_config(player_config)
+            player_config[group_id][player_id].pop("nickname", None)
+            config.saver()
             return "删除昵称成功"
         player_config[group_id][player_id]["nickname"] = nickname
-        await save_config(player_config)
+        config.saver()
         return f"设置昵称为{nickname}成功"
     except:
         return f"出现未知错误{traceback.format_exc()}"
