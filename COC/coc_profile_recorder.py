@@ -59,7 +59,7 @@ async def show_profile(group_id, player_id, elements="", ALL=False):
                 msg += ' '
             return msg
         except:
-            return "读取属性时发生未知错误"
+            return "未读取到已记录的属性"
 
 
 async def add_profile(group_id, player_id, info):
@@ -70,6 +70,7 @@ async def add_profile(group_id, player_id, info):
         try:
             profile_config[group_id][player_id].update(info)
         except:
+            profile_config[group_id]={}
             profile_config[group_id][player_id]={}
             profile_config[group_id][player_id].update(info)
         config.saver()
