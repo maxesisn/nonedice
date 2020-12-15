@@ -3,6 +3,7 @@ from ..config_master import COCConfig
 
 config=COCConfig()
 profile_config=config.get("coc_profile_config")
+p:str = config.get("personalization_config")
 
 async def resolve_info(info):
     info_set = info.split(" ")
@@ -17,16 +18,15 @@ async def resolve_info(info):
 
 
 async def clear_profile(group_id, player_id):
-    if group_id not in profile_config:
-        return "本群未存储任何玩家档案！"
-    if player_id not in profile_config[group_id]:
-        return "您尚未在本群建立档案！"
+    if group_id not in profile_config or player_id not in profile_config[group_id]:
+        return p["获取信息失败"].replace("{信息}","个人昵称")
+
     try:
         profile_config[group_id][player_id] = None
         config.saver()
-        return "已成功删除档案"
+        return p["删除信息成功"].replace("{信息}","玩家档案")
     except:
-        return "删除玩家档案时发生未知错误"
+        return p["未知错误"]
 
 
 async def delete_profile_element(group_id, player_id, elements):
@@ -35,9 +35,9 @@ async def delete_profile_element(group_id, player_id, elements):
         if profile_config[group_id][player_id][element] is not None:
             profile_config[group_id][player_id].pop(element,None)
         else:
-            return f"删除至{element}时发生错误：属性不存在。命令未生效"
+            return p["删除信息失败"].replace("{信息}","属性值").replace("{原因}","属性不存在于档案")
     config.saver()
-    return f"已成功移除：{elements_list}"
+    return p["删除信息成功"].replace("{信息}",elements_list)
 
 
 async def show_profile(group_id, player_id, elements="", ALL=False):
@@ -47,7 +47,7 @@ async def show_profile(group_id, player_id, elements="", ALL=False):
                 '{', '').replace('}', '').replace('\'', '')
             return msg
         except:
-            return "未读取到玩家档案"
+            return p["获取信息失败"].replace("{信息}","玩家档案")
     else:
         try:
             elements_list = elements.split(' ')
@@ -59,13 +59,13 @@ async def show_profile(group_id, player_id, elements="", ALL=False):
                 msg += ' '
             return msg
         except:
-            return "未读取到已记录的属性"
+            return p["获取信息失败"].replace("{信息}","已记录的属性")
 
 
 async def add_profile(group_id, player_id, info):
     info = await resolve_info(info)
     if info is None:
-        return "你在录什么？"
+        return p["未知指令"]
     try:
         try:
             profile_config[group_id][player_id].update(info)
@@ -74,7 +74,7 @@ async def add_profile(group_id, player_id, info):
             profile_config[group_id][player_id]={}
             profile_config[group_id][player_id].update(info)
         config.saver()
-        return "已成功添加属性！"
+        return p["保存信息成功"].replace("{信息}","属性值")
     except:
         print(traceback.format_exc())
-        return "录入玩家信息时发生未知错误！"
+        return p["未知错误"]

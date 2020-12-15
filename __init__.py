@@ -26,7 +26,7 @@ sv = Service('nonedice', help_='''
 
 config = GeneralConfig()
 dice_config = config.get("dice_config")
-p_config = config.get("personalization_config")
+p:str = config.get("personalization_config")
 
 
 @sv.on_prefix('.r')
@@ -77,7 +77,7 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
             else:
                 await bot.send(ev, msg + f"总计点数：{res}", at_sender=True)
         else:
-            await bot.finish(ev, p_config["掷骰面数为0"])
+            await bot.finish(ev, p["数值不合法"].replace("{信息}","骰子数量"))
     else:
         res, msg = await do_basic_dice(num, min_, max_, opr, offset, misc)
         if msg != "null dice":
@@ -89,7 +89,7 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
             else:
                 await bot.send(ev, msg, at_sender=True)
         else:
-            await bot.finish(ev, p_config["掷骰面数为0"])
+            await bot.finish(ev, p["数值不合法"].replace("{信息}","骰子数量"))
 
 
 # 对啊 我把暗骰判断交给触发器处理不就完事了吗
@@ -107,12 +107,12 @@ async def set_default_dice(bot, ev):
     elif args == "dnd":
         args = 20
     else:
-        await bot.finish(ev, p_config["面数不为正整数"])
+        await bot.finish(ev, p["数值不合法"].replace("{信息}","面数"))
     if group_id not in dice_config:
         dice_config[group_id] = {}
     dice_config[group_id]['default_dice'] = args
     config.saver()
-    await bot.send(ev, p_config["保存成功"])
+    await bot.send(ev, p["保存信息成功"].replace("{信息}","默认面数"))
 
 
 @sv.on_prefix('.ob')
@@ -125,13 +125,13 @@ async def dice_ob(bot, ev):
         msg = await ob.get_ob_list(group_id)
     elif command == 'clr':
         if not priv.check_priv(ev, priv.ADMIN):
-            msg = p_config["权限不足"]
+            msg = p["权限不足"]
         else:
             msg = await ob.quit_ob_list(group_id, player_id, ALL=True)
     elif command == 'join':
         msg = await ob.join_ob_list(group_id, player_id)
     elif command != "":
-        msg = "未知指令"
+        msg = p["未知指令"]
     else:
         msg = await ob.join_ob_list(group_id, player_id)
     await bot.send(ev, msg)
@@ -143,7 +143,7 @@ async def set_nickname(bot, ev):
     if command == "show":
         msg = await player.get_player_name(str(ev.group_id), str(ev.user_id))
         if msg is None:
-            msg = p_config["未设置昵称"]
+            msg = p["获取信息失败"].replace("{信息}","您当前的昵称")
     else:
         msg = await player.set_player_name(str(ev.group_id), str(ev.user_id), str(ev.message))
     await bot.send(ev, msg)
@@ -165,8 +165,7 @@ async def coc_profile(bot, ev):
 @sv.on_prefix('.coc6')
 async def coc_profile_v6(bot, ev):
     # 摸了
-    print(p_config["劝退COC6"])
-    await bot.send(ev, p_config["劝退COC6"])
+    await bot.send(ev, p["劝退COC6"])
 
 
 @sv.on_prefix('.st')

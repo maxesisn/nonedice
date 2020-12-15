@@ -3,6 +3,7 @@ from .config_master import GeneralConfig
 
 config = GeneralConfig()
 player_config = config.get("player_config")
+p:str = config.get("personalization_config")
 
 
 async def get_player_name(group_id, player_id):
@@ -23,12 +24,13 @@ async def set_player_name(group_id, player_id, nickname):
             player_config[group_id] = {}
         if player_id not in player_config[group_id]:
             player_config[group_id][player_id] = {}
-        if nickname == "":
+        if nickname == p["删除信息成功"].replace("{信息}","昵称"):
             player_config[group_id][player_id].pop("nickname", None)
             config.saver()
-            return "删除昵称成功"
+            return 
         player_config[group_id][player_id]["nickname"] = nickname
         config.saver()
-        return f"设置昵称为{nickname}成功"
+        return p["保存信息成功"].replace("{信息}", f"昵称为{nickname}")
     except:
-        return f"出现未知错误{traceback.format_exc()}"
+        print(traceback.format_exc())
+        return p["未知错误"]

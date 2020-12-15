@@ -6,22 +6,22 @@ from aiocqhttp.exceptions import ActionFailed
 config = GeneralConfig()
 
 ob_config = config.get("ob_config")
-
+p:str = config.get("personalization_config")
 
 async def get_ob_list(group_id):
     try:
         if group_id not in ob_config:
             ob_config[group_id] = []
         if ob_config[group_id] != []:
-            msg = "当前群内旁观者有：\n"
+            msg = p["列出信息"].replace("{信息}","群内旁观者")
             for i in ob_config[group_id]:
                 msg += "[CQ:at,qq=" + i + "]"
             return msg
         else:
-            return "当前群内没有旁观者"
-    except Exception as e:
+            return p["没有信息"].replace("{信息}","旁观者")
+    except:
         print(traceback.format_exc())
-        return "在读取ob列表时发生未知错误"
+        return p["未知错误"]
 
 
 async def join_ob_list(group_id, player_id):
@@ -29,14 +29,14 @@ async def join_ob_list(group_id, player_id):
         if group_id not in ob_config:
             ob_config[group_id] = []
         if player_id in ob_config[group_id]:
-            return "额 你已经在旁观者列表里了"
+            return p["已在列表"].replace("{信息}","旁观者列表")
         ob_config[group_id].append(player_id)
         print(ob_config)
         config.saver()
-        return "加入旁观者列表成功！"
+        return p["加入列表成功"].replace("{信息}","旁观者列表")
     except:
         print(traceback.format_exc())
-        return "加入列表时发生未知错误"
+        return p["未知错误"]
 
 
 async def quit_ob_list(group_id, player_id, ALL=False):
@@ -44,16 +44,16 @@ async def quit_ob_list(group_id, player_id, ALL=False):
         if ALL:
             ob_config[group_id] = []
             config.saver()
-            return "重置本群全部旁观者列表成功"
+            return p["重置列表成功"].replace("{信息}","观察者列表")
         if player_id in ob_config[group_id]:
             ob_config[group_id].remove(player_id)
             config.saver()
-            return "已成功退出旁观者列表"
+            return p["退出列表成功"].replace("{信息}","观察者列表")
         else:
-            return "我寻思你也没开旁观啊"
+            return p["未在列表内"].replace("{信息}","旁观者列表")
     except:
         print(traceback.format_exc())
-        return "删除旁观者时发生未知错误"
+        return p["未知错误"]
 
 
 async def ob_broadcast(bot, ev, msg):
@@ -64,13 +64,13 @@ async def ob_broadcast(bot, ev, msg):
             nickname = dicer_info['card'] or dicer_info['nickname'] or str(
                 dicer_info['user_id'])
         except:
-            await bot.send(ev, "⚠无法获取旁观者信息")
+            await bot.send(ev, p["获取信息失败"].replace("{信息}","昵称"))
             return
         for qq in ob_list:
             if int(qq) == int(ev.user_id):  # 怎么会有人开着旁观模式跑团啊？真没劲
                 continue
             await bot.send_private_msg(self_id=ev.self_id, user_id=qq, message=f"群{ev.group_id}刚刚进行了一次暗骰，结果为：\n"+nickname+msg)
             await asyncio.sleep(1)
-    except ActionFailed as e:
-        await bot.send(ev, "⚠广播暗骰结果失败，请向骰娘私发消息建立临时会话")
+    except ActionFailed:
+        await bot.send(ev, p["广播失败"])
         print(traceback.format_exc())
