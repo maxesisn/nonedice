@@ -25,19 +25,19 @@ sv = Service('nonedice', help_='''
 '''.strip())
 
 config = GeneralConfig()
-dice_config = config.get("dice_config")
-p:str = config.get("personalization_config")
+p: dict = config.personalization
 
 
 @sv.on_prefix('.r')
 # 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
 async def basic_dice(bot, ev, HIDDEN_STATE=False):
+    dice_config = config.get("dice", ev.group_id)
     m = str(ev.message)
     misc = ""
     times, num, min_, opr, offset = 1, 1, 1, '+', 0
 
     try:
-        max_ = dice_config[str(ev.group_id)]['default_dice']
+        max_ = dice_config['default_dice']
     except:
         max_ = 100
 
@@ -72,24 +72,26 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
             if misc != "":
                 msg += await comparing(str(ev.group_id), str(ev.user_id), misc, res)
             if HIDDEN_STATE:
+                await ob.quit_ob_list(str(ev.group_id), str(ev.user_id))
                 await ob.ob_broadcast(bot, ev, msg)
                 await bot.send_private_msg(self_id=ev.self_id, user_id=ev.user_id, message="本次暗骰" + msg + f"总计点数：{res}")
             else:
                 await bot.send(ev, msg + f"总计点数：{res}", at_sender=True)
         else:
-            await bot.finish(ev, p["数值不合法"].replace("{信息}","骰子数量"))
+            await bot.finish(ev, p["数值不合法"].replace("{信息}", "骰子数量"))
     else:
         res, msg = await do_basic_dice(num, min_, max_, opr, offset, misc)
         if msg != "null dice":
             if misc != "":
                 msg += await comparing(str(ev.group_id), str(ev.user_id), misc, res)
             if HIDDEN_STATE:
+                await ob.quit_ob_list(str(ev.group_id), str(ev.user_id))
                 await ob.ob_broadcast(bot, ev, msg)
                 await bot.send_private_msg(self_id=ev.self_id, user_id=ev.user_id, message="本次暗骰" + msg)
             else:
                 await bot.send(ev, msg, at_sender=True)
         else:
-            await bot.finish(ev, p["数值不合法"].replace("{信息}","骰子数量"))
+            await bot.finish(ev, p["数值不合法"].replace("{信息}", "骰子数量"))
 
 
 # 对啊 我把暗骰判断交给触发器处理不就完事了吗
@@ -100,19 +102,17 @@ async def hidden_dice(bot, ev):
 
 @sv.on_prefix('.set')
 async def set_default_dice(bot, ev):
-    group_id = str(ev.group_id)
+    dice_config = config.get("dice", ev.group_id)
     args = str(ev.message).lower()
     if args == "coc":
         args = 100
     elif args == "dnd":
         args = 20
     else:
-        await bot.finish(ev, p["数值不合法"].replace("{信息}","面数"))
-    if group_id not in dice_config:
-        dice_config[group_id] = {}
-    dice_config[group_id]['default_dice'] = args
-    config.saver()
-    await bot.send(ev, p["保存信息成功"].replace("{信息}","默认面数"))
+        await bot.finish(ev, p["数值不合法"].replace("{信息}", "面数"))
+    dice_config['default_dice'] = args
+    config.set("dice", dice_config, ev.group_id)
+    await bot.send(ev, p["保存信息成功"].replace("{信息}", "默认面数"))
 
 
 @sv.on_prefix('.ob')
@@ -143,7 +143,7 @@ async def set_nickname(bot, ev):
     if command == "show":
         msg = await player.get_player_name(str(ev.group_id), str(ev.user_id))
         if msg is None:
-            msg = p["获取信息失败"].replace("{信息}","您当前的昵称")
+            msg = p["获取信息失败"].replace("{信息}", "您当前的昵称")
     else:
         msg = await player.set_player_name(str(ev.group_id), str(ev.user_id), str(ev.message))
     await bot.send(ev, msg)

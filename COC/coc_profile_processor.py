@@ -1,52 +1,36 @@
 from ..config_master import COCConfig
 
 config = COCConfig()
-profile_config = config.get("coc_profile_config")
-template_config = config.get("coc_template_config")
+template_config: dict = config.template
+p: dict = config.personalization
 
 
 async def comparing(group_id, user_id, misc, res):
     misc = misc.strip()
-    config.loader()
-    profile_config = config.get("coc_profile_config")  # 困了，明天再寻思为什么要重载
+    profile_config = config.get("profile", group_id, user_id)
 
     # TODO:模糊匹配
-    try:
-        if misc in profile_config[group_id][user_id].keys():
-            record = int(profile_config[group_id][user_id][misc])
-        else:
-            raise KeyError
-    except KeyError:
-        profile_config[group_id] = {}
-        profile_config[group_id][user_id] = {}
-        config.saver()
-        if misc in template_config.keys():
-            record = template_config[misc]
-        else:
-            return ""
+    if misc in profile_config:
+        record = profile_config[misc]
+    elif misc in template_config:
+        record = template_config[misc]
+    else:
+        return ""
 
-    if record is None:
-        return
     record = int(record)
     res = int(res)
+    # TODO:房规功能
     if record >= res:
+        status = "成功"
         if 1 <= res <= 5:
             status = "大成功"
-        elif res <= record/2:
-            status = "困难成功"
         elif res <= record/5:
             status = "极难成功"
-        else:
-            status = "成功"
+        elif res <= record/2:
+            status = "困难成功"
     else:
         if 96 <= res <= 100:
             status = "大失败"
         else:
             status = "失败"
     return f"\n判定结果为{status}！"
-
-
-# 大成功：1-5
-# 困难成功：1/2
-# 极难成功 1/5
-# 大失败 96-100
