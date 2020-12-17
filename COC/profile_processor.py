@@ -39,6 +39,9 @@ async def comparing(group_id, user_id, misc, res):
 async def sanCheck(group_id, user_id, status_dice, misc, res_set):
     misc = misc.strip()
     profile_config = config.get("profile", group_id, user_id)
+    if "意志" in profile_config:
+        if "理智" not in profile_config:
+            profile_config["理智"]=profile_config["意志"]
     if "理智" in profile_config:
         record = profile_config["理智"]
     else:
