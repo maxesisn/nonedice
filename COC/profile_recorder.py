@@ -2,7 +2,7 @@ import traceback
 from ..config_master import COCConfig
 
 config = COCConfig()
-p: dict = config.personalization
+p: str = config.personalization
 
 
 async def resolve_info(info):
@@ -11,8 +11,9 @@ async def resolve_info(info):
     for per_info in info_set:
         per_info = per_info.replace('：', ':')
         per_info_list = per_info.split(':')
-        new_info_dict[per_info_list[0]] = int(per_info_list[1])
-        if len(per_info_list) != 2:
+        try:
+            new_info_dict[per_info_list[0]] = int(per_info_list[1])
+        except:
             return None
     return new_info_dict
 
@@ -64,7 +65,7 @@ async def add_profile(group_id, player_id, info):
     profile_config = config.get("profile", group_id, player_id)
     info = await resolve_info(info)
     if info is None:
-        return p["未知指令"]
+        return p["数值不合法"].replace("{信息}", "数值表达式")
     try:
         profile_config.update(info)
         config.set("profile", profile_config, group_id, player_id)
