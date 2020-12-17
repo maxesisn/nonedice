@@ -4,10 +4,11 @@ from hoshino import Service, priv
 
 from .config_master import GeneralConfig
 from .dice import do_basic_dice
+from .dice import simple_dice
 from . import ob
-from .COC import coc_profile_generator
-from .COC import coc_profile_recorder
-from .COC.coc_profile_processor import comparing
+from .COC import profile_generator as coc_g
+from .COC import profile_recorder as coc_r
+from .COC import profile_processor as coc_p
 from . import player
 
 sv = Service('nonedice', help_='''
@@ -25,16 +26,13 @@ sv = Service('nonedice', help_='''
 '''.strip())
 
 config = GeneralConfig()
-p: dict = config.personalization
+p: str = config.personalization
 
 
-@sv.on_prefix('.r')
-# 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
-async def basic_dice(bot, ev, HIDDEN_STATE=False):
-    dice_config = config.get("dice", ev.group_id)
+async def dice_matcher(ev):
     m = str(ev.message)
-    misc = ""
-    times, num, min_, opr, offset = 1, 1, 1, '+', 0
+    dice_config = config.get("dice", ev.group_id)
+    times, num, min_, opr, offset, misc = 1, 1, 1, '+', 0, ""
 
     try:
         max_ = dice_config['default_dice']
@@ -58,7 +56,13 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
             offset = int(s)
         if s := match.group('misc'):  # 原因/玩家姓名
             misc = s
+    return times, num, min_, max_, opr, offset, misc
 
+
+@sv.on_prefix('.r')
+# 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
+async def basic_dice(bot, ev, HIDDEN_STATE=False):
+    times, num, min_, max_, opr, offset, misc = await dice_matcher(ev)
     if times > 1:
         res, msg = 0, ""
         for i in range(times):
@@ -70,7 +74,7 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
 
         if msg != "null dice":
             if misc != "":
-                msg += await comparing(str(ev.group_id), str(ev.user_id), misc, res)
+                msg += await coc_p.comparing(str(ev.group_id), str(ev.user_id), misc, res)
             if HIDDEN_STATE:
                 await ob.quit_ob_list(str(ev.group_id), str(ev.user_id))
                 await ob.ob_broadcast(bot, ev, msg)
@@ -83,7 +87,7 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
         res, msg = await do_basic_dice(num, min_, max_, opr, offset, misc)
         if msg != "null dice":
             if misc != "":
-                msg += await comparing(str(ev.group_id), str(ev.user_id), misc, res)
+                msg += await coc_p.comparing(str(ev.group_id), str(ev.user_id), misc, res)
             if HIDDEN_STATE:
                 await ob.quit_ob_list(str(ev.group_id), str(ev.user_id))
                 await ob.ob_broadcast(bot, ev, msg)
@@ -158,7 +162,7 @@ async def coc_profile(bot, ev):
     print(command)
     if command.isdigit() is False:
         command = 1
-    msg = await coc_profile_generator.gen_coc_profile(int(command), detail_mode)
+    msg = await coc_g.gen_coc_profile(int(command), detail_mode)
     await bot.send(ev, msg, at_sender=True)
 
 
@@ -172,20 +176,42 @@ async def coc_profile_v6(bot, ev):
 async def coc_record_profile(bot, ev):
     command = str(ev.message).lower()
     if command.startswith('clr'):
-        msg = await coc_profile_recorder.clear_profile(str(ev.group_id), str(ev.user_id))
+        msg = await coc_r.clear_profile(str(ev.group_id), str(ev.user_id))
         await bot.finish(ev, msg)
     if command.startswith('del'):
         elements = command[3:].strip()
         print(elements)
-        msg = await coc_profile_recorder.delete_profile_element(str(ev.group_id), str(ev.user_id), elements)
+        msg = await coc_r.delete_profile_element(str(ev.group_id), str(ev.user_id), elements)
         await bot.finish(ev, msg)
     if command.startswith('show'):
         if command == "show":
-            msg = await coc_profile_recorder.show_profile(str(ev.group_id), str(ev.user_id), ALL=True)
+            msg = await coc_r.show_profile(str(ev.group_id), str(ev.user_id), ALL=True)
         else:
             element = command[3:]
-            msg = await coc_profile_recorder.show_profile(str(ev.group_id), str(ev.user_id), element=element)
+            msg = await coc_r.show_profile(str(ev.group_id), str(ev.user_id), element=element)
         await bot.finish(ev, msg)
     else:
-        msg = await coc_profile_recorder.add_profile(str(ev.group_id), str(ev.user_id), command)
+        msg = await coc_r.add_profile(str(ev.group_id), str(ev.user_id), command)
         await bot.finish(ev, msg)
+
+
+@sv.on_prefix(".sc")
+async def sanCheck(bot, ev):
+    _, num, min_, max_, opr, offset, misc = await dice_matcher(ev)
+    res_set = []
+    command = str(ev.message).lower().split(" ")
+    if command != "":
+        res_set = command[0].split("/")
+        if len(res_set) == 2:
+            for i in res_set:
+                if "d" in i:
+                    i, _ = await do_basic_dice(num, min_, max_, opr, offset, misc)
+        else:
+            await bot.finish(ev, p["数值不合法"].replace("{信息}", "表达式"))
+    if len(command) == 2:
+        misc = command[1]
+    if len(command) > 2:
+        await bot.finish(ev, p["数值不合法"].replace("{信息}", "表达式"))
+    status_dice = await simple_dice(max_)
+    msg = await coc_p.sanCheck(ev.group_id, ev.user_id, status_dice, misc, res_set)
+    await bot.send(ev, msg)

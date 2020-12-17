@@ -6,6 +6,7 @@ import fuckit
 class Config(object):
     fd = os.path.dirname(__file__)
 
+    # 用replace很难看，以后一定修
     with open(os.path.join(fd, "config/personalization.json"), "r") as f:
         personalization = json.load(f)
 

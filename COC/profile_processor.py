@@ -2,7 +2,7 @@ from ..config_master import COCConfig
 
 config = COCConfig()
 template_config: dict = config.template
-p: dict = config.personalization
+p: str = config.personalization
 
 
 async def comparing(group_id, user_id, misc, res):
@@ -34,3 +34,22 @@ async def comparing(group_id, user_id, misc, res):
         else:
             status = "失败"
     return f"\n判定结果为{status}！"
+
+
+async def sanCheck(group_id, user_id, status_dice, misc, res_set):
+    misc = misc.strip()
+    profile_config = config.get("profile", group_id, user_id)
+    if "理智" in profile_config:
+        record = profile_config["理智"]
+    else:
+        if misc.isdigit():
+            record = int(misc)
+        else:
+            return p["获取信息失败"].replace("{信息}", "理智值")
+
+    res = int(res_set[0]) if record >= status_dice else int(res_set[1])
+    status = "成功" if res == int(res_set[0]) else "失败"
+    record -= res
+    profile_config["理智"] = record
+    config.set("profile", profile_config, group_id, user_id)
+    return f"san check{status}！扣除{res}，当前理智：{record}"
