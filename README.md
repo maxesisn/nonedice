@@ -17,6 +17,7 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 - 请禁用```HoshinoBot```的```dice```插件以避免冲突
 
 ## 功能列表
+> 现在的感觉够用了！没人催就先摸了！
 - [x] Help命令
 - [x] 基础掷骰
 - [x] 复杂掷骰表达式

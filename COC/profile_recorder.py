@@ -63,7 +63,8 @@ async def show_profile(group_id, player_id, elements="", ALL=False):
 
 async def add_profile(group_id, player_id, info):
     profile_config = config.get("profile", group_id, player_id)
-    info = await resolve_info(info)
+    if isinstance(info, str):
+        info = await resolve_info(info)
     if info is None:
         return p["数值不合法"].replace("{信息}", "数值表达式")
     try:

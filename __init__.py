@@ -30,9 +30,8 @@ config = GeneralConfig()
 p: str = config.personalization  # 其实是dict，但是我贪语法补全
 
 
-async def dice_matcher(ev):
-    m = str(ev.message)
-    dice_config = config.get("dice", ev.group_id)
+async def dice_matcher(m, group_id):
+    dice_config = config.get("dice", group_id)
     times, num, min_, opr, offset, misc = 1, 1, 1, '+', 0, ""
 
     try:
@@ -64,7 +63,7 @@ async def dice_matcher(ev):
 # 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
 async def basic_dice(bot, ev, HIDDEN_STATE=False):
     dice_config = config.get("dice", ev.group_id)
-    times, num, min_, max_, opr, offset, misc = await dice_matcher(ev)
+    times, num, min_, max_, opr, offset, misc = await dice_matcher(str(ev.message), ev.group_id)
     if "doc" in dice_config:
         doc = dice_config["doc"]
     else:
@@ -206,14 +205,15 @@ async def coc_record_profile(bot, ev):
 
 @sv.on_prefix(".sc")
 async def sanCheck(bot, ev):
-    _, num, min_, max_, opr, offset, misc = await dice_matcher(ev)
     res_set = []
+    _, num, min_, max_, opr, offset, misc = await dice_matcher(i, ev.group_id)
     command = str(ev.message).lower().split(" ")
     if command != "":
         res_set = command[0].split("/")
         if len(res_set) == 2:
             for i in res_set:
                 if "d" in i:
+                    _, num, min_, max_, opr, offset, misc = await dice_matcher(i, ev.group_id)
                     i, _ = await do_basic_dice(num, min_, max_, opr, offset, misc)
         else:
             await bot.finish(ev, p["数值不合法"].replace("{信息}", "表达式"))
