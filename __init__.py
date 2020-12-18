@@ -12,7 +12,7 @@ from .COC import profile_recorder as coc_r
 from .COC import profile_processor as coc_p
 from . import player
 
-sv = Service('nonedice', help_='''
+help='''
 [.r] 掷骰子
 [.r 3d12] 掷3次12面骰子
 [.r 3d7~12] 掷3次7~12面骰子
@@ -24,7 +24,22 @@ sv = Service('nonedice', help_='''
 [.ob exit]退出观察者模式
 [.ob list]列出本群所有观察者
 [.ob clr]清除本群所有观察者
-'''.strip())
+[.coc]基本COC人物信息生成
+[.st XX:XX]记录/更新属性
+[.st show]显示所有属性
+[.st del XX]删除属性
+[.st clr]清空属性
+[.sc 1/1d6 XX]san check，如果档案无理智记录则以XX为基础值
+[.jrrp]显示今日人品
+[.ti]roll出临时疯狂症状与持续轮数
+[.ti show]显示当前所有的临时疯狂症状
+[.ti del XX]删除某一疯狂症状，若有重复只删除一个
+[.ti clr]清空疯狂症状
+[.li]总结疯狂症状
+[.setdoc]设置房规，细则与溯洄骰相同
+'''
+
+sv = Service('nonedice', help_=help)
 
 config = GeneralConfig()
 p: str = config.personalization  # 其实是dict，但是我贪语法补全
@@ -58,6 +73,9 @@ async def dice_matcher(m, group_id):
             misc = s
     return times, num, min_, max_, opr, offset, misc
 
+@sv.on_prefix('.help')
+async def dice_help(bot, ev):
+    await bot.send(ev, help)
 
 @sv.on_prefix('.r')
 # 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
@@ -206,7 +224,8 @@ async def coc_record_profile(bot, ev):
 @sv.on_prefix(".sc")
 async def sanCheck(bot, ev):
     res_set = []
-    _, num, min_, max_, opr, offset, misc = await dice_matcher(i, ev.group_id)
+    # 这里不对劲，但是今天摸了！
+    _, num, min_, max_, opr, offset, misc = await dice_matcher(str(ev.message), ev.group_id)
     command = str(ev.message).lower().split(" ")
     if command != "":
         res_set = command[0].split("/")
