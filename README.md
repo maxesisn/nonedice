@@ -42,3 +42,9 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 - [ ] Name/nnn随机名称生成
 - [x] Set默认骰设定
 - [ ] 各模块开启以及关闭
+
+## 大饼列表
+> 能不能完成看缘分
+- [ ] 导入Excel人物卡
+- [ ] 输出图片人物卡
+- [ ] 背景故事生成

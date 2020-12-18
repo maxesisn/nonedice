@@ -12,7 +12,7 @@ from .COC import profile_recorder as coc_r
 from .COC import profile_processor as coc_p
 from . import player
 
-help='''
+help = '''
 [.r] 掷骰子
 [.r 3d12] 掷3次12面骰子
 [.r 3d7~12] 掷3次7~12面骰子
@@ -73,9 +73,11 @@ async def dice_matcher(m, group_id):
             misc = s
     return times, num, min_, max_, opr, offset, misc
 
+
 @sv.on_prefix('.help')
 async def dice_help(bot, ev):
     await bot.send(ev, help)
+
 
 @sv.on_prefix('.r')
 # 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
@@ -167,6 +169,7 @@ async def dice_ob(bot, ev):
     await bot.send(ev, msg)
 
 
+# 还没有实际应用
 @sv.on_prefix('.nn')
 async def set_nickname(bot, ev):
     command = str(ev.message).lower()
