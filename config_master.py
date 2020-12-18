@@ -1,5 +1,8 @@
 import os
-import json
+try:
+    import ujson as json
+except:
+    import json
 import fuckit
 
 

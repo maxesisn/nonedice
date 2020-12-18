@@ -1,6 +1,7 @@
 import re
 
 from hoshino import Service, priv
+from aiocqhttp import ActionFailed
 
 from .config_master import GeneralConfig
 from .dice import do_basic_dice
@@ -91,7 +92,10 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
             if HIDDEN_STATE:
                 await ob.quit_ob_list(str(ev.group_id), str(ev.user_id))
                 await ob.ob_broadcast(bot, ev, msg)
-                await bot.send_private_msg(self_id=ev.self_id, user_id=ev.user_id, message="本次暗骰" + msg)
+                try:
+                    await bot.send_private_msg(self_id=ev.self_id, user_id=ev.user_id, message="本次暗骰" + msg)
+                except ActionFailed:
+                    await bot.finish(ev, p["广播失败"])
             else:
                 await bot.send(ev, msg, at_sender=True)
         else:
@@ -215,3 +219,10 @@ async def sanCheck(bot, ev):
     status_dice = await simple_dice(max_)
     msg = await coc_p.sanCheck(ev.group_id, ev.user_id, status_dice, misc, res_set)
     await bot.send(ev, msg)
+
+
+@sv.on_prefix('.jrrp')
+async def jrrp(bot, ev):
+    msg = await player.jrrp(ev.user_id)
+    msg = p["人品值"].replace("{消息}", str(msg))
+    await bot.send(ev, msg, at_sender=True)

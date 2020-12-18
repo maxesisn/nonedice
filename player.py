@@ -1,4 +1,6 @@
 import traceback
+import datetime
+import random
 from .config_master import GeneralConfig
 
 config = GeneralConfig()
@@ -26,3 +28,16 @@ async def set_player_name(group_id, player_id, nickname):
     except:
         print(traceback.format_exc())
         return p["未知错误"]
+
+
+async def jrrp(player_id):
+    group_id = "global"
+    player_config = config.get("player", group_id, player_id)
+    if "rpdate" in player_config:
+        if player_config["rpdate"] == datetime.date.today().strftime("%d"):
+            return player_config["rp"]
+
+    player_config["rp"] = random.randint(1, 100)
+    player_config["rpdate"] = datetime.date.today().strftime("%d")
+    config.set("player", player_config, group_id, player_id)
+    return player_config["rp"]
