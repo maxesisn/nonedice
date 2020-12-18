@@ -27,7 +27,7 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 - [x] COC表达式人物卡录入
 - [ ] COC成长检定
 - [x] COC人物卡生成
-- [ ] COC检定房规设定
+- [x] COC检定房规设定
 - [x] COC理智检定
 - [x] COC疯狂列表
 - [ ] Keep掷骰

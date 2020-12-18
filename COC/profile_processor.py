@@ -6,7 +6,7 @@ template_config: dict = config.template
 p: str = config.personalization
 
 
-async def comparing(group_id, user_id, misc, res):
+async def comparing(group_id, user_id, misc, res, doc):
     misc = misc.strip()
     profile_config = config.get("profile", group_id, user_id)
 
@@ -20,20 +20,43 @@ async def comparing(group_id, user_id, misc, res):
 
     record = int(record)
     res = int(res)
-    # TODO:房规功能
-    if record >= res:
-        status = "成功"
-        if 1 <= res <= 5:
-            status = "大成功"
-        elif res <= record/5:
-            status = "极难成功"
-        elif res <= record/2:
-            status = "困难成功"
+    # 房规不太好抽象成配置文件，就嗯写
+    if doc == 1:
+        status = "大成功" if (record < 50 and res == 1) or (
+            record >= 50 and 1 <= res <= 5) else None
+        status = "大失败" if (record < 50 and 96 <= res <= 100) or (
+            record >= 50 and res == 100) else None
+    if doc == 2:
+        status = "大成功" if 1 <= res <= 5 and res <= record else None
+        status = "大失败" if res == 100 or (
+            96 <= res <= 99 and res > record) else None
+    if doc == 3:
+        status = "大成功" if 1 <= res <= 5 else None
+        status = "大失败" if 96 <= res <= 100 else None
+    if doc == 4:
+        status = "大成功" if 1 <= res <= 5 and res <= record/10 else None
+        status = "大失败" if (record < 50 and res >= 96+record /
+                           10) or (record >= 50 and res == 100) else None
+    if doc == 5:
+        status = "大成功" if 1 <= res <= 2 and res < record/5 else None
+        status = "大失败" if (record < 50 and 96 <= res <= 100) or (
+            record >= 50 and 99 <= res <= 100) else None
     else:
-        if 96 <= res <= 100:
-            status = "大失败"
+        status = "大成功" if res == 1 else None
+        status = "大失败" if (record < 50 and 96 <= res <= 100) or (
+            record >= 50 and res == 100) else None
+
+    if status is None:
+        if record >= res:
+            if res < record/5:
+                status = "极难成功"
+            elif res < record/2:
+                status = "困难成功"
+            else:
+                status = "成功"
         else:
             status = "失败"
+
     return f"\n判定结果为{status}！"
 
 

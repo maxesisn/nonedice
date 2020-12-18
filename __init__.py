@@ -27,7 +27,7 @@ sv = Service('nonedice', help_='''
 '''.strip())
 
 config = GeneralConfig()
-p: str = config.personalization
+p: str = config.personalization  # 其实是dict，但是我贪语法补全
 
 
 async def dice_matcher(ev):
@@ -63,7 +63,12 @@ async def dice_matcher(ev):
 @sv.on_prefix('.r')
 # 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
 async def basic_dice(bot, ev, HIDDEN_STATE=False):
+    dice_config = config.get("dice", ev.group_id)
     times, num, min_, max_, opr, offset, misc = await dice_matcher(ev)
+    if "doc" in dice_config:
+        doc = dice_config["doc"]
+    else:
+        doc = 0
     if times > 1:
         res, msg = 0, ""
         for i in range(times):
@@ -75,7 +80,7 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
 
         if msg != "null dice":
             if misc != "":
-                msg += await coc_p.comparing(str(ev.group_id), str(ev.user_id), misc, res)
+                msg += await coc_p.comparing(str(ev.group_id), str(ev.user_id), misc, res, doc)
             if HIDDEN_STATE:
                 await ob.quit_ob_list(str(ev.group_id), str(ev.user_id))
                 await ob.ob_broadcast(bot, ev, msg)
@@ -88,7 +93,7 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
         res, msg = await do_basic_dice(num, min_, max_, opr, offset, misc)
         if msg != "null dice":
             if misc != "":
-                msg += await coc_p.comparing(str(ev.group_id), str(ev.user_id), misc, res)
+                msg += await coc_p.comparing(str(ev.group_id), str(ev.user_id), misc, res, doc)
             if HIDDEN_STATE:
                 await ob.quit_ob_list(str(ev.group_id), str(ev.user_id))
                 await ob.ob_broadcast(bot, ev, msg)
@@ -246,3 +251,18 @@ async def temp_insanity(bot, ev):
 async def list_insanity(bot, ev):
     msg = await coc_p.list_insanity(ev.group_id, ev.user_id)
     await bot.send(ev, msg)
+
+
+@sv.on_prefix('.setdoc')
+async def setdoc(bot, ev):
+    dice_config = config.get("dice", ev.group_id)
+    arg = str(ev.message).strip().lower()
+    if arg.isdigit() or arg == "":
+        if arg == "":
+            arg = 0
+        arg = int(arg)
+        if 0 <= arg <= 5:
+            dice_config["doc"] = arg
+            config.set("dice", dice_config, ev.group_id)
+            await bot.finish(ev, p["保存信息成功"].replace("{信息}", "房规"))
+    await bot.finish(ev, p["数值不合法"].replace("信息", "房规"))
