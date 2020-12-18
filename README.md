@@ -19,27 +19,27 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 ## 功能列表
 >- [x]表示已实现 ✘表示未实现/关键部分未实现
 
-- [x]Help命令
-- [x]基础掷骰
-- [x]复杂掷骰表达式
-- [x]COC判定掷骰
-- [x]COC人物卡
-- [ ]COC多人物卡
-- [ ]COC跨人物卡检定
-- [x]COC表达式人物卡录入
-- [ ]COC成长检定
-- [x]COC人物卡生成
-- [ ]COC检定房规设定
-- [x]COC理智检定
-- [ ]COC疯狂列表
-- [ ]Keep掷骰
-- [ ]DND人物卡生成
-- [ ]DND先攻
-- [ ]Rules规则查询
-- [x]Jrrp今日人品
-- [ ]Fudge骰
-- [ ]Ww骰池
-- [ ]Dx骰
-- [ ]Name/nnn随机名称生成
-- [x]Set默认骰设定
-- [ ]各模块开启以及关闭
+- [x] Help命令
+- [x] 基础掷骰
+- [x] 复杂掷骰表达式
+- [x] COC判定掷骰
+- [x] COC人物卡
+- [ ] COC多人物卡
+- [ ] COC跨人物卡检定
+- [x] COC表达式人物卡录入
+- [ ] COC成长检定
+- [x] COC人物卡生成
+- [ ] COC检定房规设定
+- [x] COC理智检定
+- [ ] COC疯狂列表
+- [ ] Keep掷骰
+- [ ] DND人物卡生成
+- [ ] DND先攻
+- [ ] Rules规则查询
+- [x] Jrrp今日人品
+- [ ] Fudge骰
+- [ ] Ww骰池
+- [ ] Dx骰
+- [ ] Name/nnn随机名称生成
+- [x] Set默认骰设定
+- [ ] 各模块开启以及关闭
