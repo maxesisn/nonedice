@@ -37,7 +37,7 @@ async def do_basic_dice(num, min_, max_, opr, offset, misc=""):
     msg = ''.join(msg)
     return res, msg
 
-
+# 与random.randint()用法类似，但是可以读取群内默认面数
 async def simple_dice(max_=100):
     result,_ = await do_basic_dice(1, 1, max_, '+', 0)
     return result 

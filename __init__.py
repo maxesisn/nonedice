@@ -226,3 +226,23 @@ async def jrrp(bot, ev):
     msg = await player.jrrp(ev.user_id)
     msg = p["人品值"].replace("{消息}", str(msg))
     await bot.send(ev, msg, at_sender=True)
+
+
+@sv.on_prefix('.ti')
+async def temp_insanity(bot, ev):
+    command = str(ev.message).strip().lower()
+    if command == "show":
+        msg = await coc_p.temp_insanity(ev.group_id, ev.user_id, show=True)
+    elif command.startswith("del"):
+        msg = await coc_p.del_insanity(ev.group_id, ev.user_id, command[3:])
+    elif command == "clr":
+        msg = await coc_p.del_insanity(ev.group_id, ev.user_id, "", ALL=True)
+    else:
+        msg = await coc_p.temp_insanity(ev.group_id, ev.user_id)
+    await bot.send(ev, msg)
+
+
+@sv.on_prefix('.li')
+async def list_insanity(bot, ev):
+    msg = await coc_p.list_insanity(ev.group_id, ev.user_id)
+    await bot.send(ev, msg)

@@ -29,7 +29,7 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 - [x] COC人物卡生成
 - [ ] COC检定房规设定
 - [x] COC理智检定
-- [ ] COC疯狂列表
+- [x] COC疯狂列表
 - [ ] Keep掷骰
 - [ ] DND人物卡生成
 - [ ] DND先攻

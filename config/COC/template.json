@@ -1,5 +1,5 @@
 {
-    "数据来源": "溯洄骰 [https://github.com/Dice-Developer-Team/Dice/blob/Shiki/Dice/RDConstant.h]",
+    "数据来源": "溯洄骰 [https:\/\/github.com\/Dice-Developer-Team\/Dice\/blob\/Shiki\/Dice\/RDConstant.h]",
     "会计": 5,
     "人类学": 1,
     "估价": 5,
@@ -45,7 +45,7 @@
     "链枷": 25,
     "矛": 25,
     "手枪": 20,
-    "步枪/霰弹枪": 25,
+    "步枪\/霰弹枪": 25,
     "冲锋枪": 15,
     "弓术": 15,
     "火焰喷射器": 10,
