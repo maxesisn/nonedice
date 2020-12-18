@@ -10,6 +10,8 @@ Dice!插件的nonebot山寨实现
 ```shell
 git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/nonedice
 ```
+pip安装```fuckit```库
+
 并在```__bot__.py```中添加插件名称即可
 
 - 虽然插件名是nonedice，但是本插件需要[HoshinoBot](https://github.com/Ice-Cirno/HoshinoBot)框架以实现部分功能（后续可能会迁移到nonebot2）
@@ -45,6 +47,7 @@ git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/noned
 
 ## 大饼列表
 > 能不能完成看缘分
+- [ ] 脱离HoshinoBot框架
 - [ ] 导入Excel人物卡
 - [ ] 输出图片人物卡
 - [ ] 背景故事生成

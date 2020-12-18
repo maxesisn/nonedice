@@ -42,6 +42,7 @@ help = '''
 sv = Service('nonedice', help_=help)
 
 config = GeneralConfig()
+# 个性化配置用replace很难看，以后一定修！
 p: str = config.personalization  # 其实是dict，但是我贪语法补全
 
 
@@ -88,6 +89,9 @@ async def basic_dice(bot, ev, HIDDEN_STATE=False):
         doc = dice_config["doc"]
     else:
         doc = 0
+    
+    # 这里有不必要的重复代码，很难看
+    # 以后一定修！
     if times > 1:
         res, msg = 0, ""
         for i in range(times):

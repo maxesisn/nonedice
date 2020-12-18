@@ -21,6 +21,7 @@ async def comparing(group_id, user_id, misc, res, doc):
     record = int(record)
     res = int(res)
     # 房规不太好抽象成配置文件，就嗯写
+    # 以后一定修！
     if doc == 1:
         status = "大成功" if (record < 50 and res == 1) or (
             record >= 50 and 1 <= res <= 5) else None

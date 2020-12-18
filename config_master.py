@@ -5,11 +5,12 @@ except:
     import json
 import fuckit
 
-
+# 本来的设想是启动时将所有config读取进内存，定期序列化成json保存
+# 但现在并非如此，读写json文件的操作理论上会很拖累性能
+# 懒得改了，以后一定修！
 class Config(object):
     fd = os.path.dirname(__file__)
 
-    # 用replace很难看，以后一定修
     with open(os.path.join(fd, "config/personalization.json"), "r") as f:
         personalization = json.load(f)
 
@@ -81,6 +82,8 @@ class GeneralConfig(Config):
         self.ob = {}
         self.loader()
 
+    # 用fuckit库只是让代码看起来简洁，但是这种做法不好
+    # 以后一定改！
     @fuckit
     def loader(self):
         with open(os.path.join(self.fd, "config/dice.json"), "r") as f:
