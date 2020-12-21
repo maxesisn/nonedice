@@ -5,14 +5,17 @@ Dice!插件的nonebot山寨实现
 > 本项目含有大量开发阶段代码，部分实现尚未完成或与原版```Dice!```插件不一致，请阅读源码后再决定是否使用
 
 ## 目前正在进行的工作
-* 重写配置文件结构，防止数据丢失问题
+* 使kp用昵称代为PL掷骰（及其它昵称相关功能）
+
+## 最近完成的工作
+* 重写配置文件结构，防止数据丢失问题[0e49dc9](https://github.com/maxesisn/nonedice/commit/0e49dc9dcbd4a25de3d1c0cd6cba5c48fd2c894e)
+
 
 ## 使用说明
 在```run.py```同级目录执行
 ```shell
 git submodule add https://github.com/maxesisn/nonedice.git hoshino/modules/nonedice
 ```
-pip安装```fuckit```库
 
 并在```__bot__.py```中添加插件名称即可
 
