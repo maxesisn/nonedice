@@ -6,8 +6,8 @@ Dice!插件的nonebot山寨实现
 
 ## 目前正在进行的工作
 * <del>KP用昵称代为PL掷骰（及其它昵称相关功能）</del>群里KP说没必要，不做了
-
-* 修改为完整的nonebot项目
+* <del>修改为完整的nonebot项目</del>nonebot2不能和nonebot1共存，不想自己造触发器轮子，不做了
+* ```.en```成长检定
 
 ## 最近完成的工作
 * 重写配置文件结构，防止数据丢失问题[0e49dc9](https://github.com/maxesisn/nonedice/commit/0e49dc9dcbd4a25de3d1c0cd6cba5c48fd2c894e)
