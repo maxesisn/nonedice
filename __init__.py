@@ -36,7 +36,7 @@ help = '''
 [.ti del XX]删除某一疯狂症状，若有重复只删除一个
 [.ti clr]清空疯狂症状
 [.li]总结疯狂症状
-[.setdoc]设置房规，细则与溯洄骰相同
+[.setdoc]设置房规，细则与溯洄骰相同（就是抄的）
 '''
 
 sv = Service('nonedice', help_=help)
