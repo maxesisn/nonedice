@@ -3,7 +3,7 @@ import re
 from hoshino import Service, priv
 from aiocqhttp import ActionFailed
 
-from .config_master import GeneralConfig
+from .config_master import Config
 from .dice import do_basic_dice
 from .dice import simple_dice
 from . import ob
@@ -41,17 +41,16 @@ help = '''
 
 sv = Service('nonedice', help_=help)
 
-config = GeneralConfig()
 # 个性化配置用replace很难看，以后一定修！
-p: str = config.personalization  # 其实是dict，但是我贪语法补全
+p: str = Config("static").load("personalization")
 
 
 async def dice_matcher(m, group_id):
-    dice_config = config.get("dice", group_id)
+    dice_config = Config(group_id).load("dice")
     times, num, min_, opr, offset, misc = 1, 1, 1, '+', 0, ""
 
     try:
-        max_ = dice_config['default_dice']
+        max_ = dice_config["default_dice"]
     except:
         max_ = 100
 
@@ -83,13 +82,13 @@ async def dice_help(bot, ev):
 @sv.on_prefix('.r')
 # 本部分代码基于Ice-Cirno/HoshinoBot中的dice模块
 async def basic_dice(bot, ev, HIDDEN_STATE=False):
-    dice_config = config.get("dice", ev.group_id)
+    dice_config = Config(ev.group_id).load("dice")
     times, num, min_, max_, opr, offset, misc = await dice_matcher(str(ev.message), ev.group_id)
     if "doc" in dice_config:
         doc = dice_config["doc"]
     else:
         doc = 0
-    
+
     # 这里有不必要的重复代码，很难看
     # 以后一定修！
     if times > 1:
@@ -138,7 +137,8 @@ async def hidden_dice(bot, ev):
 
 @sv.on_prefix('.set')
 async def set_default_dice(bot, ev):
-    dice_config = config.get("dice", ev.group_id)
+    config = Config(ev.group_id)
+    dice_config = config.load("dice")
     args = str(ev.message).lower()
     if args == "coc":
         args = 100
@@ -147,7 +147,7 @@ async def set_default_dice(bot, ev):
     else:
         await bot.finish(ev, p["数值不合法"].replace("{信息}", "面数"))
     dice_config['default_dice'] = args
-    config.set("dice", dice_config, ev.group_id)
+    config.save()
     await bot.send(ev, p["保存信息成功"].replace("{信息}", "默认面数"))
 
 
@@ -275,13 +275,14 @@ async def temp_insanity(bot, ev):
 
 @sv.on_prefix('.li')
 async def list_insanity(bot, ev):
-    msg = await coc_p.list_insanity(ev.group_id, ev.user_id)
+    msg = await coc_p.list_insanity()
     await bot.send(ev, msg)
 
 
 @sv.on_prefix('.setdoc')
 async def setdoc(bot, ev):
-    dice_config = config.get("dice", ev.group_id)
+    config = Config(ev.group_id)
+    dice_config = config.load("dice")
     arg = str(ev.message).strip().lower()
     if arg.isdigit() or arg == "":
         if arg == "":
@@ -289,6 +290,6 @@ async def setdoc(bot, ev):
         arg = int(arg)
         if 0 <= arg <= 5:
             dice_config["doc"] = arg
-            config.set("dice", dice_config, ev.group_id)
+            config.save()
             await bot.finish(ev, p["保存信息成功"].replace("{信息}", "房规"))
     await bot.finish(ev, p["数值不合法"].replace("信息", "房规"))

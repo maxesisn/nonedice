@@ -1,15 +1,13 @@
 import random
-from ..config_master import COCConfig
+from ..config_master import Config
 
-config = COCConfig()
-template_config: dict = config.template
-p: str = config.personalization
+p: str = Config("static").load("personalization")
+template_config: str = Config("static").load("coc_template")
 
 
 async def comparing(group_id, user_id, misc, res, doc):
     misc = misc.strip()
-    profile_config = config.get("profile", group_id, user_id)
-
+    profile_config = Config(group_id).load(user_id)["profile"]
     # TODO:模糊匹配
     if misc in profile_config:
         record = profile_config[misc]
@@ -63,12 +61,15 @@ async def comparing(group_id, user_id, misc, res, doc):
 
 async def sanCheck(group_id, user_id, status_dice, misc, res_set):
     misc = misc.strip()
-    profile_config = config.get("profile", group_id, user_id)
-    if "意志" in profile_config:
-        if "理智" not in profile_config:
-            profile_config["理智"] = profile_config["意志"]
-    if "理智" in profile_config:
-        record = profile_config["理智"]
+    config=Config(group_id)
+    player_config = config.load(user_id)
+    if "profile" not in player_config:
+        player_config["profile"]=dict()
+    if "意志" in player_config["profile"]:
+        if "理智" not in player_config["profile"]:
+            player_config["profile"]["理智"] = player_config["profile"]["意志"]
+    if "理智" in player_config["profile"]:
+        record = player_config["profile"]["理智"]
     else:
         if misc.isdigit():
             record = int(misc)
@@ -78,26 +79,28 @@ async def sanCheck(group_id, user_id, status_dice, misc, res_set):
     res = int(res_set[0]) if record >= status_dice else int(res_set[1])
     status = "成功" if res == int(res_set[0]) else "失败"
     record -= res
-    profile_config["理智"] = record
-    config.set("profile", profile_config, group_id, user_id)
+    player_config["profile"]["理智"] = record
+    config.save()
     return f"san check{status}！扣除{res}，当前理智：{record}"
 
 
 async def temp_insanity(group_id, user_id, show=False):
-    profile_config = config.get("profile", group_id, user_id)
+    config=Config(group_id)
+    player_config=config.load(user_id)
+    if "profile" not in player_config:
+        player_config["profile"]=dict()
     if show:
-        if "临时疯狂症状" in profile_config:
-            return "、".join(profile_config["临时疯狂症状"])
+        if "临时疯狂症状" in player_config["profile"]:
+            return "、".join(player_config["profile"]["临时疯狂症状"])
         else:
             return p["没有信息"].replace("{信息}", "临时疯狂症状")
-    id = random.randint(0, 9)
     insanity_list = ["失忆", "假性残疾", "暴力倾向", "偏执",
                      "人际依赖", "昏厥", "逃避行为", "竭嘶底里", "恐惧", "狂躁"]
-    insanity_res = insanity_list[id]
-    if "临时疯狂症状" not in profile_config:
-        profile_config["临时疯狂症状"] = []
-    profile_config["临时疯狂症状"].append(insanity_res)
-    config.set("profile", profile_config, group_id, user_id)
+    insanity_res = insanity_list[random.randint(0, 9)]
+    if "临时疯狂症状" not in player_config["profile"]:
+        player_config["profile"]["临时疯狂症状"] = list()
+    player_config["profile"]["临时疯狂症状"].append(insanity_res)
+    config.save()
     last_turns = random.randint(1, 10)
     if insanity_res == ("恐惧" or "狂躁"):
         # 草，100种症状，谁写啊
@@ -107,20 +110,25 @@ async def temp_insanity(group_id, user_id, show=False):
 
 async def del_insanity(group_id, user_id, misc, ALL=False):
     misc = misc.strip()
-    profile_config = config.get("profile", group_id, user_id)
+    config=Config(group_id)
+    player_config = config.load(user_id)
+    if "profile" not in player_config:
+        player_config["profile"]=dict()
     if ALL:
-        profile_config.pop("临时疯狂症状", None)
-        config.set("profile", profile_config, group_id, user_id)
+        player_config["profile"].pop("临时疯狂症状", None)
+        config.save()
         return p["重置列表成功"].replace("{信息}", "临时疯狂症状")
-    if "临时疯狂症状" in profile_config and misc in profile_config["临时疯狂症状"]:
-        profile_config["临时疯狂症状"].remove(misc)
-        config.set("profile", profile_config, group_id, user_id)
+    if "临时疯狂症状" in player_config["profile"] and misc in player_config["profile"]["临时疯狂症状"]:
+        player_config["profile"]["临时疯狂症状"].remove(misc)
+        if len(player_config["profile"]["临时疯狂症状"]) ==0:
+            player_config["profile"].pop("临时疯狂症状", None)
+        config.save()
         return p["删除信息成功"].replace("{信息}", "临时疯狂症状")
     else:
         return p["获取信息失败"].replace("{信息}", "需删除的临时疯狂症状")
 
 
-async def list_insanity(group_id, user_id):
+async def list_insanity():
     id = random.randint(0, 9)
     insanity_list = ["失忆", "被窃", "遍体鳞伤", "暴力倾向",
                      "极端信念", "重要之人", "被收容", "逃避行为", "恐惧", "狂躁"]

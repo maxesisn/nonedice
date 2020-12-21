@@ -1,124 +1,31 @@
+# 内存吞噬者 启动！
 import os
 try:
     import ujson as json
 except:
     import json
-import fuckit
 
-# 本来的设想是启动时将所有config读取进内存，定期序列化成json保存
-# 但现在并非如此，读写json文件的操作理论上会很拖累性能
-# 懒得改了，以后一定修！
 class Config(object):
-    fd = os.path.dirname(__file__)
 
-    with open(os.path.join(fd, "config/personalization.json"), "r") as f:
-        personalization = json.load(f)
-
-    def __init__(self) -> None:
+    def __init__(self, gid) -> None:
         super().__init__()
+        self.path = os.path.join(os.path.dirname(__file__), "config")
+        self.config_list = os.listdir(self.path)
+        self.gid = str(gid)
 
-    def get(self, config_name, group_id, user_id=None):
-        group_id = str(group_id)
-        if user_id is not None:
-            user_id = str(user_id)
-        self.loader()
+    def load(self, sub_id) -> dict:
+        sub_id=str(sub_id)
 
-        config: dict = getattr(self, config_name)
-        try:
-            if group_id not in getattr(self, config_name):
-                getattr(self, config_name)[group_id] = {}
-            if user_id is not None and user_id not in getattr(self, config_name)[group_id]:
-                getattr(self, config_name)[group_id][user_id] = {}
-            if user_id is not None:
-                return config[group_id][user_id]
-            else:
-                return config[group_id]
-        except KeyError:
-            print("KeyError exception passed")
-
-    def set(self, config_name, content, group_id, user_id=None):
-        group_id = str(group_id)
-        if user_id is not None:
-            user_id = str(user_id)
-        self.loader()
-
-        try:
-            if group_id not in getattr(self, config_name):
-                getattr(self, config_name)[group_id] = {}
-            if user_id is not None and user_id not in getattr(self, config_name)[group_id]:
-                getattr(self, config_name)[group_id][user_id] = {}
-            if user_id is not None:
-                getattr(self, config_name)[group_id][user_id] = content
-            else:
-                getattr(self, config_name)[group_id] = content
-            self.saver()
-        except KeyError:
-            print("KeyError exception passed")
-            
-
-    def clr(self, config_name, group_id, user_id=None):
-        group_id = str(group_id)
-        if user_id is not None:
-            user_id = str(user_id)
-        self.loader()
-
-        try:
-            config = getattr(self, config_name)
-            if user_id is not None:
-                del config[group_id][user_id]
-            else:
-                del config[group_id]
-            self.saver()
-        except KeyError:
-            print("KeyError exception passed")
-            return None
-
-
-class GeneralConfig(Config):
-    def __init__(self) -> None:
-        super().__init__()
-        self.dice = {}
-        self.player = {}
-        self.ob = {}
-        self.loader()
-
-    # 用fuckit库只是让代码看起来简洁，但是这种做法不好
-    # 以后一定改！
-    @fuckit
-    def loader(self):
-        with open(os.path.join(self.fd, "config/dice.json"), "r") as f:
-            self.dice = json.load(f)
-        with open(os.path.join(self.fd, "config/player.json"), "r") as f:
-            self.player = json.load(f)
-        with open(os.path.join(self.fd, "config/ob.json"), "r") as f:
-            self.ob = json.load(f)
-
-    def saver(self):
-        with open(os.path.join(self.fd, "config/dice.json"), "w") as f:
-            json.dump(self.dice, f, indent=4, ensure_ascii=False)
-        with open(os.path.join(self.fd, "config/player.json"), "w") as f:
-            json.dump(self.player, f, indent=4, ensure_ascii=False)
-        with open(os.path.join(self.fd, "config/ob.json"), "w") as f:
-            json.dump(self.ob, f, indent=4, ensure_ascii=False)
-
-
-class COCConfig(Config):
-    def __init__(self) -> None:
-        super().__init__()
-        self.template = {}
-        self.profile = {}
-        self.loader()
-
-    @fuckit
-    def loader(self):
-        with open(os.path.join(self.fd, "config/COC/template.json"), "r") as f:
-            self.template = json.load(f)
-        with open(os.path.join(self.fd, "config/COC/profile.json"), "r") as f:
-            self.profile = json.load(f)
-
-    def saver(self):
-        with open(os.path.join(self.fd, "config/COC/template.json"), "w") as f:
-            json.dump(self.template, f,
-                      indent=4, ensure_ascii=False)
-        with open(os.path.join(self.fd, "config/COC/profile.json"), "w") as f:
-            json.dump(self.profile, f, indent=4, ensure_ascii=False)
+        if f"{self.gid}.json" not in self.config_list:
+            self.group_config=dict()    
+        else:
+            with open(os.path.join(self.path,f"{self.gid}.json"), "r") as f:
+                self.group_config=json.load(f)
+        
+        if sub_id not in self.group_config:
+            self.group_config[sub_id]=dict()
+        return self.group_config[sub_id]
+        
+    def save(self):
+        with open(os.path.join(self.path,f"{self.gid}.json"), "w") as f:
+            json.dump(self.group_config, f, indent=4, ensure_ascii=False)

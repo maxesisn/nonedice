@@ -1,8 +1,7 @@
 import traceback
-from ..config_master import COCConfig
+from ..config_master import Config
 
-config = COCConfig()
-p: str = config.personalization
+p: str = Config("static").load("personalization")
 
 
 async def resolve_info(info):
@@ -19,29 +18,38 @@ async def resolve_info(info):
 
 
 async def clear_profile(group_id, player_id):
+    config = Config(group_id)
+    player_config=config.load(player_id)
+    if "profile" not in player_config:
+        player_config["profile"]=dict()
     try:
-        config.clr("profile", group_id, player_id)
+        player_config.pop("profile", None)
+        config.save()
         return p["删除信息成功"].replace("{信息}", "玩家档案")
     except:
         return p["未知错误"]
 
 
 async def delete_profile_element(group_id, player_id, elements):
-    profile_config = config.get("profile", group_id, player_id)
+    config = Config(group_id)
+    player_config = config.load(player_id)
+    if "profile" not in player_config:
+        player_config["profile"]=dict()
     elements_list = elements.split(" ")
     for element in elements_list:
-        if profile_config[element] is not None:
-            profile_config.pop(element, None)
+        if player_config["profile"][element] is not None:
+            player_config["profile"].pop(element, None)
         else:
             return p["删除信息失败"].replace("{信息}", "属性值").replace("{原因}", "属性不存在于档案")
-    config.set("profile", profile_config, group_id, player_id)
-    return p["删除信息成功"].replace("{信息}", elements_list)
+    config.save()
+    return p["删除信息成功"].replace("{信息}", "、".join(elements_list))
 
 
 async def show_profile(group_id, player_id, elements="", ALL=False):
-    profile_config = config.get("profile", group_id, player_id)
+    profile_config=Config(group_id).load(player_id)["profile"]
     if ALL is True:
         try:
+            # 暴力输出
             msg = str(profile_config).replace(
                 '{', '').replace('}', '').replace('\'', '')
             return msg
@@ -62,14 +70,17 @@ async def show_profile(group_id, player_id, elements="", ALL=False):
 
 
 async def add_profile(group_id, player_id, info):
-    profile_config = config.get("profile", group_id, player_id)
+    config = Config(group_id)
+    player_config=config.load(player_id)
+    if "profile" not in player_config:
+        player_config["profile"]=dict()
     if isinstance(info, str):
         info = await resolve_info(info)
     if info is None:
         return p["数值不合法"].replace("{信息}", "数值表达式")
     try:
-        profile_config.update(info)
-        config.set("profile", profile_config, group_id, player_id)
+        player_config["profile"].update(info)
+        config.save()
         return p["保存信息成功"].replace("{信息}", "属性值")
     except:
         print(traceback.format_exc())

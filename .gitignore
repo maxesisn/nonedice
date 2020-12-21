@@ -1,3 +1,2 @@
 *.json
-!config/personalization.json
-!config/COC/template.json
+!config/static.json
