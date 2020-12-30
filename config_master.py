@@ -19,7 +19,7 @@ class Config(object):
         if f"{self.gid}.json" not in self.config_list:
             self.group_config=dict()    
         else:
-            with open(os.path.join(self.path,f"{self.gid}.json"), "r") as f:
+            with open(os.path.join(self.path,f"{self.gid}.json"), "r", encoding="utf-8") as f:
                 self.group_config=json.load(f)
         
         if sub_id not in self.group_config:
@@ -27,5 +27,5 @@ class Config(object):
         return self.group_config[sub_id]
         
     def save(self):
-        with open(os.path.join(self.path,f"{self.gid}.json"), "w") as f:
+        with open(os.path.join(self.path,f"{self.gid}.json"), "w", encoding="utf-8") as f:
             json.dump(self.group_config, f, indent=4, ensure_ascii=False)
