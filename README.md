@@ -1,6 +1,7 @@
 # nonedice
 Dice!插件的nonebot山寨实现
 
+[![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 
 > 本项目含有大量开发阶段代码，部分实现尚未完成或与原版```Dice!```插件不一致，请阅读源码后再决定是否使用
 
