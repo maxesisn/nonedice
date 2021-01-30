@@ -1,5 +1,6 @@
 # nonedice
-Dice!插件的nonebot山寨实现
+Dice!插件的nonebot山寨实现  
+**因转向nonebot2，本插件停止维护**
 
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 
